@@ -33,4 +33,4 @@ cov.txt
 
 node_modules
 *.log*
-ui/build/
+!ui/build/.gitkeep

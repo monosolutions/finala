@@ -3,7 +3,7 @@ ENV NODE_ENV=production
 COPY ./ui /app
 WORKDIR /app
 RUN npm install
-RUN npm run build
+RUN npx webpack --config config/webpack.config.production.js --color -p --progress --hide-modules --display-optimization-bailout
 
 FROM golang:1.12-alpine AS build_base
 
