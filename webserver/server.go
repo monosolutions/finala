@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-
+	"io/ioutil"
 	"github.com/gobuffalo/packr"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -19,8 +19,10 @@ import (
 
 const (
 	// DrainTimeout is how long to wait until the server is drained before closing it
-	DrainTimeout = time.Second * 30
+	DrainTimeout = time.Second * 30	
 )
+
+var box = packr.NewBox("../ui/build");
 
 // Server is the API server struct
 type Server struct {
@@ -70,11 +72,30 @@ func (server *Server) Serve() serverutil.StopFunc {
 	}
 }
 
+func interceptHandler(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	next.ServeHTTP(&interceptResponseWriter{w, customErrorHandler}, r)
+})
+}
+
+func customErrorHandler(w http.ResponseWriter, status int) {
+	if status == 404 {
+		file, _:= box.Open("/index.html")
+		content, err := ioutil.ReadAll(file)
+		if(err != nil) {
+			panic("unreachable")
+		}
+		w.Header().Add("Content-Type", "text/html")
+		w.WriteHeader(200)
+		w.Write(content)
+	}
+}
+
 // BindEndpoints sets up the router to handle API endpoints
 func (server *Server) BindEndpoints() {
 
-	box := packr.NewBox("../ui/build")
-	server.router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(box)))
+	
+	server.router.PathPrefix("/static").Handler(http.StripPrefix("/static",interceptHandler(http.FileServer(box))))
 	server.router.HandleFunc("/api/v1/summary", server.GetSummary).Methods("GET")               // HealthCheck
 	server.router.HandleFunc("/api/v1/resources/{type}", server.GetResourceData).Methods("GET") // return list of job deployments
 	server.router.HandleFunc("/api/v1/health", server.HealthCheckHandler).Methods("GET")        // HealthCheck
