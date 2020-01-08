@@ -19,11 +19,8 @@ class Http {
             method: action,
         };
         merge(defaultRequestOptions, customRequestOptions);
-        let baseUrl = `<<API_URL>>`
-        if (baseUrl === ""){
-            baseUrl = `http://127.0.0.1:${window.location.port}`
-        }
-        return fetch(`${baseUrl}/${url}`, defaultRequestOptions).then(handleResponse)
+        
+        return fetch(`/${url}`, defaultRequestOptions).then(handleResponse)
     }
 }
 

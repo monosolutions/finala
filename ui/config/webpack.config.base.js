@@ -42,17 +42,7 @@ module.exports = (options) => ({
                 name: 'images/[hash]-[name].[ext]'
             } 
         }]
-      },
-      {
-        test: /\.js$/,
-        loader: 'string-replace-loader',
-        options: {
-          multiple: [
-              { search: '<<API_URL>>', replace: Settings.webserver_endpoint},
-              
-          ]
-        }
-      },
+      },      
       {
         test: /\.svg$/,
         loader: 'svg-inline-loader'
