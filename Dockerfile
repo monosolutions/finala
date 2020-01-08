@@ -2,7 +2,7 @@ FROM node:12-alpine as frontend_build
 ENV NODE_ENV=production
 COPY ./ui /app
 WORKDIR /app
-RUN npm install webpack -g
+RUN npm install webpack webpack-cli -g
 RUN npm install
 RUN webpack --config config/webpack.config.production.js --color -p --progress --hide-modules --display-optimization-bailou
 
