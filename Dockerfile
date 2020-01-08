@@ -3,7 +3,7 @@ ENV NODE_ENV=production
 COPY ./ui /app
 WORKDIR /app
 RUN npm install
-RUN npm build
+RUN npm run build
 
 FROM golang:1.12-alpine AS build_base
 
